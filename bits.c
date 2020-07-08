@@ -140,7 +140,8 @@ NOTES:
  *   Hint : less than 5 lines of code
  */
 int bitAnd(int x, int y) {
-  return 2;
+
+  return ~(~x | ~y);
 }
 /*
  * getByte - Extract byte n from word x
@@ -152,7 +153,7 @@ int bitAnd(int x, int y) {
  *   Hint : less than 5 lines of code
  */
 int getByte(int x, int n) {
-  return 2;
+  return (x >> 8*n) & 0xFF;
 }
 /*
  * logicalShift - shift x to the right by n, using a logical shift
@@ -164,7 +165,11 @@ int getByte(int x, int n) {
  *   Hint : less than 10 lines of code
  */
 int logicalShift(int x, int n) {
-  return 2;
+	int temp = 1<<31;
+	int temp2 = temp >> n;
+	int temp3 = ~(temp2 << 1);
+	x = x >> n;
+		 return x & temp3;
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -175,7 +180,24 @@ int logicalShift(int x, int n) {
  *   Hint : less than 10 lines of code
  */
 int bitCount(int x) {
-  return 2;
+	int temp1=0x0F;
+	int temp2=0x11;
+	int temp3=(temp2<<8)+temp2;
+	temp3=(temp3<<16)+temp3;
+	int temp4=(temp1<<8)+temp1;
+	temp4=(temp4<<16)+temp4;
+
+	x=(x&temp3)+((x>>1)&temp3)+((x>>2)&temp3)+((x>>3)&temp3);
+
+	x=(x+(x>>4))&temp4;
+
+	x=x+(x>>8);
+	x=x+(x>>16);
+
+	
+
+
+  return x & 0x3F;
 }
 /*
  * tmin - return minimum two's complement integer
@@ -185,7 +207,8 @@ int bitCount(int x) {
  *   Hint : less than 5 lines of code
  */
 int tmin(void) {
-  return 2;
+	
+  return 1<<31;
 }
 /*
  * fitsBits - return 1 if x can be represented as an
@@ -198,7 +221,10 @@ int tmin(void) {
  *   Hint : less than 5 lines of code
  */
 int fitsBits(int x, int n) {
-  return 2;
+	int temp1=33+~n;
+	int temp2=(x<<temp1) >> temp1;
+
+  return !(x^temp2);
 }
 /*
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -210,7 +236,9 @@ int fitsBits(int x, int n) {
  *   Hint : less than 5 lines of code
  */
 int divpwr2(int x, int n) {
-    return 2;
+	int temp1 = (1<<n)+~0;
+	int temp2 = (x>>31)& temp1;
+    return (x+temp2)>>n;
 }
 /*
  * negate - return -x
@@ -221,7 +249,7 @@ int divpwr2(int x, int n) {
  *   Hint : less than 5 lines of code
  */
 int negate(int x) {
-  return 2;
+  return ~x+1;
 }
 /*
  * isPositive - return 1 if x > 0, return 0 otherwise
@@ -232,7 +260,8 @@ int negate(int x) {
  *   Hint : less than 5 lines of code
  */
 int isPositive(int x) {
-  return 2;
+
+  return !(x>>31 | !x);
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
@@ -273,5 +302,14 @@ unsigned float_neg(unsigned uf) {
  *   Hint : less than 20 lines of code
  */
 unsigned float_twice(unsigned uf) {
-  return 2;
+
+	int temp1 = uf & 0x80000000;
+	int temp2 = uf & 0x7F800000;
+	int temp3 = !temp2;
+	if(temp3){
+		uf = temp1 | (uf<<1);
+	}else if (temp2!=0x7F800000){
+		uf=uf+0x800000;
+}
+  return uf;
 }
